@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EiskaltDC++ Control</string>
+    <string name = "edit_message">Edit MESSAGE</string>
+    <string name="button_send">SEND</string>
+    <string name="title_activity_display_message">MyMessage</string>
+    <string name="title_activity_search">Search</string>
+
+</resources>
