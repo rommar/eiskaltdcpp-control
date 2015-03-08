@@ -1,16 +1,11 @@
 package com.eiskaltdcpp.control;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import android.app.AlertDialog;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 
@@ -92,7 +87,7 @@ public class Searcher
 	
 	
 	
-	public void updateResults(SearchResults results)
+	private void updateResults(SearchResults results)
 	{
 		if (results != null && results.values != null && results.values.length > 0)
 		{
@@ -128,6 +123,7 @@ public class Searcher
 	
 	public void clearResults()
 	{
+		searchResults.clear();
 		if (listener != null)
 			listener.onClearResults();
 	}
@@ -167,56 +163,97 @@ public class Searcher
 		
 	}
 	
+	public static class PeriodicTask
+	{
+		//private long timerCount = 0;
+		//private final long maxTimerCount;
+		private long time = 0;
+		private final long maxTime;
+		private final long period;
+		private Handler timerHandler = new Handler();
+		private Runnable targetRunnable;
+		
+		private Runnable timerRunnable = new Runnable()
+		    {
+		    	public void run()
+		    	{
+		    		if (time >= maxTime)
+		    			return;
+		    		
+		    		
+		    		targetRunnable.run();
+		    		
+					timerHandler.postDelayed(this, period);
+					time += period;
+		    	}
+		    };
+		
+		public PeriodicTask(long durationMs, long periodMs, Runnable r)
+		{
+			maxTime = durationMs;
+			period = periodMs;
+			targetRunnable = r;
+			
+		}
+		
+		public void start(long delayMs)
+		{
+			time = 0;
+			timerHandler.postDelayed(timerRunnable, delayMs);
+		}
+		
+		public void stop()
+		{
+			time = maxTime;
+		}
+	}
 	
 	
-	//TODO: Move to separate class
-	private long timerCount = 0;
-	private long maxTimerCount = 12;
-	private Handler timerHandler = new Handler();
-	
+    
+    PeriodicTask searchResultsTask = new PeriodicTask(60000, 5000, new Runnable()
+	{
+		
+		@Override
+		public void run()
+		{
+			//TODO: Avoid sending new request before receiving reply.
+			Log.i("SearchActivityTimer", "Sending request");
+    		ServiceProxy.getInstance().getSearchResults("", 
+				new AsyncTaskResultListener<SearchResults>()
+				{
 
-    private Runnable timerRunnable = new Runnable()
-    {
-    	public void run()
-    	{
-    		if (timerCount >= maxTimerCount)
-    			return;
-    		
-    		Log.i("SearchActivityTimer", "Sending request");
-    		ServiceProxy.getInstance().getSearchResults("hub.dc.zet", 
-    				new AsyncTaskResultListener<SearchResults>()
-    				{
-
-						@Override
-						public void onCompleted(SearchResults results)
+					@Override
+					public void onCompleted(SearchResults results)
+					{
+						Log.i("SearchActivityTimer", "Completed");
+						Log.i("SearchActivityTimer", "Results count: " + Integer.toString(Searcher.getInstance().getCount()));
+						
+						if (results.values == null)
 						{
-							Log.i("SearchActivityTimer", "Completed");
-							Searcher.getInstance().updateResults(results);
+							Log.e("SearchActivityTimer", "ERROR: NULL Search result values");
+							//searchResultsTask.stop();
 						}
+						
+						Searcher.getInstance().updateResults(results);
+					}
 
-						@Override
-						public void onError(Throwable error)
-						{
-							Log.e("SearchActivityTimer", "Error" + ": " + error.toString());
-							
-							timerCount = maxTimerCount;
-						}
-    				
-    				});
+					@Override
+					public void onError(Throwable error)
+					{
+						Log.e("SearchActivityTimer", "Error" + ": " + error.toString());
+						
+						searchResultsTask.stop();
+					}
+				
+				});
 
-			timerHandler.postDelayed(this, 5000);
-			timerCount++;
-    	}
-    };
-	
+		}
+	});
     
 	public void sendSearch(String searchString, Context context)
 	{
-		timerCount = maxTimerCount;
-		
 		Searcher.getInstance().clearResults();
-		
-		
+		searchResultsTask.stop();
 		
 		final AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(context);
 
@@ -239,13 +276,15 @@ public class Searcher
 						dlgAlert.setMessage("OK");
 						dlgAlert.create().show();
 						
-						timerCount = 0;
-						timerHandler.postDelayed(timerRunnable, 1000);
+						searchResultsTask.start(2000);
 						
 					}
 				});
 	}
-	
+	public void stopSearch()
+	{
+		searchResultsTask.stop();
+	}
 
 
 }

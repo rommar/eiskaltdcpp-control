@@ -29,7 +29,6 @@ public class SearchUi
 		@Override
 		public void onClearResults()
 		{
-			// TODO Auto-generated method stub
 			results.clear();
 			adapter.notifyDataSetChanged();
 		}

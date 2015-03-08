@@ -23,12 +23,16 @@ public class SearchActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search);
         
+        EditText edit = (EditText) findViewById(R.id.editTextSearchString);
+        edit.setText("time");
+        
 	}
 	
 	public void onSearchButtonClick(View view)
 	{
 	
 		EditText edit = (EditText) findViewById(R.id.editTextSearchString);
+		
     	String searchString = edit.getText().toString();
     	
     	Searcher.getInstance().sendSearch(searchString, this);

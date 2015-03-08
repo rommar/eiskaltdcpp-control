@@ -11,6 +11,7 @@ import org.json.rpc.client.JsonRpcParam;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 
 
@@ -195,8 +196,26 @@ public class ServiceProxy
 			@Override
 			protected Integer execAction()
 			{
-				//String value = hub.list();
+				//EXP:
+				String value = hub.list();
+				if (value.length() == 0)
+				{
+					Log.e("sendSearch", "hub list empty");
+					throw new Error("hub list empty");
+				}
+				//EXP:
 				search.clear();
+				/*
+				try
+				{
+					Thread.sleep(2000);
+				} catch (InterruptedException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				*/
+				
 				return search.send(searchString, searchType, sizeMode, sizeType, size, hubUrls);
 			}
 		};
