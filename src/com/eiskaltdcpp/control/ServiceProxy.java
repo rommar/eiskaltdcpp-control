@@ -224,24 +224,7 @@ public class ServiceProxy
 		
 	}
 	
-	/*
-	public void getSearchResults(final String hubUrl, final AsyncTaskResultListener<HashMap<String, String>[]> listener)
-	{
-		AsyncAction<HashMap<String, String>[]> getSearchResultsAction = new AsyncAction<HashMap<String, String>[]> (listener)
-			{
-
-				@Override
-				protected HashMap<String, String>[] execAction()
-				{
-					return search.getresults(hubUrl);
-				}
 		
-			};
-		getSearchResultsAction.execute();
-	}
-	*/
-
-	
 	public void getSearchResults(final String hubUrl, final AsyncTaskResultListener<SearchResults> listener)
 	{
 		AsyncAction<SearchResults> getSearchResultsAction = new AsyncAction<SearchResults> (listener)
@@ -251,7 +234,9 @@ public class ServiceProxy
 				protected SearchResults execAction()
 				{
 					SearchResults results = new SearchResults();
+					long startTime = System.currentTimeMillis();
 					results.values = search.getresults(hubUrl);
+					Log.i("getSearchResults", "Time consumed for results retrieval: " + Long.toString(System.currentTimeMillis() - startTime));
 					return results;
 				}
 		

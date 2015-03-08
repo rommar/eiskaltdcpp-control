@@ -39,19 +39,31 @@ public class SearchUi
 			results.add(result);
 			
 		}
+		
+		@Override
+		public void onUpdateResult(SearchResult result)
+		{
+			sort();
+			adapter.notifyDataSetChanged();
+		}
 
 		@Override
 		public void onBatchUpdateCompleted()
 		{
-			adapter.sort(new Comparator<SearchResult>()
-				{
-					@Override
-					public int compare(SearchResult lhs, SearchResult rhs)
-					{
-						return lhs.count - rhs.count;
-					}
-				});
+			sort();
 			adapter.notifyDataSetChanged();
+		}
+		
+		private void sort()
+		{
+			adapter.sort(new Comparator<SearchResult>()
+					{
+						@Override
+						public int compare(SearchResult lhs, SearchResult rhs)
+						{
+							return (int) (rhs.getCount() - lhs.getCount());
+						}
+					});
 		}
 		
 	}
@@ -90,7 +102,9 @@ public class SearchUi
 			TextView title = (TextView)itemView.findViewById(R.id.resource_title);
 			TextView details = (TextView)itemView.findViewById(R.id.resource_details);
 			
-			title.setText(resultList.get(position).title);
+			SearchResult resultsGroup = resultList.get(position);
+			title.setText(resultsGroup.title);
+			details.setText("Count: " + Long.toString(resultsGroup.getCount()));
 			
 			return itemView;
 		}

@@ -1,5 +1,6 @@
 package com.eiskaltdcpp.control;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -22,50 +23,33 @@ public class Searcher
 	{
 		void onClearResults();
 		void onNewResult(SearchResult result);
+		void onUpdateResult(SearchResult result);
 		void onBatchUpdateCompleted();
 	}
 
 	
+	public static class SearchResultItem
+	{		
+		public String title = "";
+		public int slots = 0;
+	}
+	
 	public static class SearchResult
 	{
 		public String title = "";
-		public String cid = "";
-		public String tth = "";
-		public int slots = 0;
-		public int count = 0;
-		
-	}
-	
-	public static class SearchResultItemComparator implements Comparator<String>
-	{
-
-		private HashMap<String, SearchResult> resultsMap; 
-		
-		public SearchResultItemComparator(HashMap<String, SearchResult> searchResults)
+		public HashMap<String, SearchResultItem> children = new LinkedHashMap<String, SearchResultItem>();
+		public long getCount()
 		{
-			resultsMap = searchResults;
-		}
-
-		@Override
-		public int compare(String lhs, String rhs)
-		{
-			SearchResult left = resultsMap.get(lhs);
-			SearchResult right = resultsMap.get(rhs);
-			
-			if (left.slots < right.slots)
-				return -1;
-			else if (left.slots > right.slots)
-				return +1;
-			return 0;
+			return children.size();
 		}
 		
+		
 	}
+		
 	
-
 	
 	private static Searcher instance = null;
 	private HashMap<String, SearchResult> searchResults = new LinkedHashMap<String, SearchResult>();
-	private SearchResultItemComparator comparator = new SearchResultItemComparator(searchResults);
 	
 	private SearchListenerInterface listener = null;
 	
@@ -97,21 +81,36 @@ public class Searcher
 				String tth = resultMap.get("TTH");
 				if (cid != null && tth != null)
 				{
-					String id = cid + tth;
-					if (!searchResults.containsKey(id))
+					//String id = cid + tth;
+					//String id = tth;
+					
+					// If no result group exists for TTH
+					if (!searchResults.containsKey(tth))
 					{
-						SearchResult result = searchResultMapToObject(resultMap);
-						searchResults.put(id, result);
-						//sortedResults.add(id);
+						SearchResult resultGroup = searchResultMapToObject(resultMap);
+						updateSearchResultGroup(resultGroup, resultMap);
+						searchResults.put(tth, resultGroup);
 						if (listener != null)
 						{
-							listener.onNewResult(result);
+							listener.onNewResult(resultGroup);
+						}
+					}
+					else // results group exists
+					{
+						SearchResult resultGroup = searchResults.get(tth);
+						
+						if (!resultGroup.children.containsKey(cid))
+						{
+							updateSearchResultGroup(resultGroup, resultMap);
+							
+							if (listener != null)
+							{
+								listener.onUpdateResult(resultGroup);
+							}
 						}
 						
-					}
-					else
-					{
-						searchResults.get(id).count++;
+						
+						
 					}
 				}
 			}
@@ -146,6 +145,22 @@ public class Searcher
 		SearchResult result = new SearchResult();
 		result.title = resultMap.get("Filename");
 		
+		return result;
+		
+	}
+	
+	private static void updateSearchResultGroup(SearchResult resultGroup, HashMap<String, String> resultMap)
+	{
+		if (!resultMap.containsKey("Filename"))
+			return;
+		
+		String cid = resultMap.get("CID");
+		if (cid == null)
+			return;
+		
+		SearchResultItem resultItem = new SearchResultItem();
+		resultItem.title = resultMap.get("Filename");
+		
 		if (resultMap.containsKey("Slots"))
 		{
 			String slotsStr = resultMap.get("Slots");
@@ -159,7 +174,9 @@ public class Searcher
 			}
 		}
 		
-		return result;
+		resultGroup.children.put(cid, resultItem);
+		
+		
 		
 	}
 	
@@ -252,8 +269,8 @@ public class Searcher
     
 	public void sendSearch(String searchString, Context context)
 	{
-		Searcher.getInstance().clearResults();
 		searchResultsTask.stop();
+		Searcher.getInstance().clearResults();
 		
 		final AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(context);
 
@@ -261,7 +278,7 @@ public class Searcher
 		dlgAlert.setPositiveButton("OK", null);
 		dlgAlert.setCancelable(true);
 		
-		ServiceProxy.getInstance().sendSearch(searchString, 0, 0, 0, 0, "hub.dc.zet", 
+		ServiceProxy.getInstance().sendSearch(searchString, 0, 0, 0, 0, "", 
 				new AsyncTaskResultListener<Integer>()
 				{
 					
