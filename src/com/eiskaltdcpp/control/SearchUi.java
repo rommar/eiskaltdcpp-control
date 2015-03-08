@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
@@ -92,21 +93,34 @@ public class SearchUi
 			super.notifyDataSetChanged();
 		}
 		
+		private static class ViewHolder
+		{
+			public TextView title;
+			public TextView details;
+			public ImageView icon;
+		}
+		
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View itemView = inflater.inflate(R.layout.result_item, parent, false);
+			if (convertView == null)
+			{
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(R.layout.result_item, parent, false);
+				ViewHolder holder = new ViewHolder();
+				holder.title =  (TextView)convertView.findViewById(R.id.resource_title);
+				holder.details = (TextView)convertView.findViewById(R.id.resource_details);
+				convertView.setTag(holder);
+			}
 			
-			TextView title = (TextView)itemView.findViewById(R.id.resource_title);
-			TextView details = (TextView)itemView.findViewById(R.id.resource_details);
+			ViewHolder holder = (ViewHolder)convertView.getTag();
 			
 			SearchResult resultsGroup = resultList.get(position);
-			title.setText(resultsGroup.title);
-			details.setText("Count: " + Long.toString(resultsGroup.getCount()));
+			holder.title.setText(resultsGroup.title);
+			holder.details.setText("Count: " + Long.toString(resultsGroup.getCount()));
 			
-			return itemView;
+			return convertView;
 		}
 		
 		
