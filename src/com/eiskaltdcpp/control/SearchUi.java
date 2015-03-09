@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 
 import com.eiskaltdcpp.control.Searcher.SearchListenerInterface;
@@ -98,6 +103,8 @@ public class SearchUi
 			public TextView title;
 			public TextView details;
 			public ImageView icon;
+			public ImageView popup_icon;
+			
 		}
 		
 
@@ -111,17 +118,65 @@ public class SearchUi
 				ViewHolder holder = new ViewHolder();
 				holder.title =  (TextView)convertView.findViewById(R.id.resource_title);
 				holder.details = (TextView)convertView.findViewById(R.id.resource_details);
+				holder.icon = (ImageView)convertView.findViewById(R.id.resource_type_icon);
+				holder.popup_icon = (ImageView)convertView.findViewById(R.id.result_item_popup_icon);
 				convertView.setTag(holder);
 			}
 			
 			ViewHolder holder = (ViewHolder)convertView.getTag();
 			
-			SearchResult resultsGroup = resultList.get(position);
+			final SearchResult resultsGroup = resultList.get(position);
+			
 			holder.title.setText(resultsGroup.title);
 			holder.details.setText("Count: " + Long.toString(resultsGroup.getCount()));
-			
+			holder.popup_icon.setOnClickListener(new View.OnClickListener()
+			{
+				
+				@Override
+				public void onClick(View v)
+				{
+					showPopupMenu(v, resultsGroup);
+					
+				}
+			});
 			return convertView;
 		}
+		
+		public void showPopupMenu(View view, final SearchResult resultsGroup)
+		{
+			PopupMenu popup = new PopupMenu(context, view);
+			
+			MenuInflater inflater = popup.getMenuInflater();
+		    inflater.inflate(R.menu.search_results_popup_menu, popup.getMenu());
+		    
+		    popup.setOnMenuItemClickListener(new OnMenuItemClickListener()
+			{
+				
+				@Override
+				public boolean onMenuItemClick(MenuItem item)
+				{
+					switch (item.getItemId()) 
+					{
+			        case R.id.search_result_action_download:
+			            downloadItemClicked(resultsGroup);
+			            return true;
+
+			        default:
+			        	return false;
+					}
+				}
+			});
+
+		    
+		    popup.show();
+
+		}
+		
+		private void downloadItemClicked(SearchResult resultsGroup)
+		{
+			Log.i("downloadItemClicked", "downloadItemClicked");
+		}
+
 		
 		
 	}

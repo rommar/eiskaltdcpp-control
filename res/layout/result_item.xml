@@ -12,15 +12,27 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="6dip"
         android:contentDescription="TODO"
-        android:src="@drawable/ic_launcher" />
-
+        android:src="@drawable/ic_launcher"
+        
+         />
+ <ImageView
+         android:id="@+id/result_item_popup_icon"
+         android:layout_width="wrap_content"
+         android:layout_height="fill_parent"
+         android:layout_alignParentBottom="true"
+         android:layout_alignParentRight="true"
+         android:layout_alignTop="@+id/resource_type_icon"
+         android:contentDescription="TODO"
+         android:src="@drawable/ic_action_popup_menu" />
+ 
     <TextView
         android:id="@+id/resource_details"
         android:layout_width="fill_parent"
         android:layout_height="26dip"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        
         android:layout_toRightOf="@id/resource_type_icon"
+        android:layout_toLeftOf="@id/result_item_popup_icon"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:text="Description"
@@ -31,12 +43,15 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/resource_details"
-        android:layout_alignParentRight="true"
+        
         android:layout_alignParentTop="true"
         android:layout_alignWithParentIfMissing="true"
         android:layout_toRightOf="@id/resource_type_icon"
+        android:layout_toLeftOf="@id/result_item_popup_icon"
         android:gravity="center_vertical"
-        android:text="Example application"
+        android:text="Title"
         android:textSize="16sp" />
+
+    
 
 </RelativeLayout> 
