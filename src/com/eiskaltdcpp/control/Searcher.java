@@ -192,11 +192,16 @@ public class Searcher
 	
 	PeriodicTask searchResultsTask = new PeriodicTask(60000, 5000, new Runnable()
 	{
-		
+		boolean bypass = false;
 		@Override
 		public void run()
 		{
-			//TODO: Avoid sending new request before receiving reply.
+			// Avoid sending new request before receiving reply.
+			if (bypass)
+				return;
+			
+			bypass = true;
+			
 			Log.i("SearchActivityTimer", "Sending request");
     		ServiceProxy.getInstance().getSearchResults("", 
 				new AsyncTaskResultListener<SearchResults>()
@@ -215,6 +220,8 @@ public class Searcher
 						}
 						
 						Searcher.getInstance().updateResults(results);
+						
+						bypass = false;
 					}
 
 					@Override
@@ -223,6 +230,8 @@ public class Searcher
 						Log.e("SearchActivityTimer", "Error" + ": " + error.toString());
 						
 						searchResultsTask.stop();
+						
+						bypass = false;
 					}
 				
 				});

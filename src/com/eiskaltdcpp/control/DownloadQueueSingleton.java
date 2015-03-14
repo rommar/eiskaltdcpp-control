@@ -10,9 +10,7 @@ public class DownloadQueueSingleton
 	public static interface DownloadQueueListenerInterface
 	{
 		void onDownloadQueueUpdated();
-		
 	}
-	
 	
 	private static DownloadQueueSingleton instance;
 	
@@ -50,7 +48,10 @@ public class DownloadQueueSingleton
 				public void onCompleted(QueueRecords result)
 				{
 					Log.i("queueListTask", "OK");
-					//Log.i("queueListTask", "Size: " + Integer.toString(result.values.length));
+					if (result.values != null)
+					{
+						Log.i("queueListTask", "Size: " + Integer.toString(result.values.size()));
+					}
 				}
 			});
 			

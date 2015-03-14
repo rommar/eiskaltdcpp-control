@@ -74,11 +74,10 @@ public class SearchUi
 		
 	}
 	
-	public static class SearchResultItemAdapter extends ArrayAdapter<SearchResult> 
+	public static class SearchResultItemAdapter extends ViewHolderArrayAdapter<SearchResult>
 	{
 
 		private Searcher searcher = null;
-		private Context context = null;
 		private ArrayList<SearchResult> resultList = null;
 		
 		public SearchResultItemAdapter(Context context, ArrayList<SearchResult> resultList)
@@ -87,11 +86,8 @@ public class SearchUi
 			
 			if (searcher == null)
 				searcher = Searcher.getInstance();
-			
-			this.context = context;
 			this.resultList = resultList;
 		}
-
 		@Override
 		public void notifyDataSetChanged()
 		{
@@ -107,45 +103,9 @@ public class SearchUi
 			
 		}
 		
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
-			if (convertView == null)
-			{
-				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				convertView = inflater.inflate(R.layout.result_item, parent, false);
-				ViewHolder holder = new ViewHolder();
-				holder.title =  (TextView)convertView.findViewById(R.id.resource_title);
-				holder.details = (TextView)convertView.findViewById(R.id.resource_details);
-				holder.icon = (ImageView)convertView.findViewById(R.id.resource_type_icon);
-				holder.popup_icon = (ImageView)convertView.findViewById(R.id.result_item_popup_icon);
-				convertView.setTag(holder);
-			}
-			
-			ViewHolder holder = (ViewHolder)convertView.getTag();
-			
-			final SearchResult resultsGroup = resultList.get(position);
-			
-			holder.title.setText(resultsGroup.title);
-			holder.details.setText("Count: " + Long.toString(resultsGroup.getCount()));
-			//TODO: Can be optimized: don't create listener each time
-			holder.popup_icon.setOnClickListener(new View.OnClickListener()
-			{
-				
-				@Override
-				public void onClick(View v)
-				{
-					showPopupMenu(v, resultsGroup);
-					
-				}
-			});
-			return convertView;
-		}
-		
 		public void showPopupMenu(View view, final SearchResult resultsGroup)
 		{
-			PopupMenu popup = new PopupMenu(context, view);
+			PopupMenu popup = new PopupMenu(getContext(), view);
 			
 			MenuInflater inflater = popup.getMenuInflater();
 		    inflater.inflate(R.menu.search_results_popup_menu, popup.getMenu());
@@ -182,6 +142,38 @@ public class SearchUi
 					resultsGroup.realSize, 
 					resultsGroup.tth, 
 					"");
+		}
+		
+		@Override
+		public Object createViewHolder(View view)
+		{
+			ViewHolder holder = new ViewHolder();
+			holder.title =  (TextView)view.findViewById(R.id.resource_title);
+			holder.details = (TextView)view.findViewById(R.id.resource_details);
+			holder.icon = (ImageView)view.findViewById(R.id.resource_type_icon);
+			holder.popup_icon = (ImageView)view.findViewById(R.id.result_item_popup_icon);
+			return holder;
+		}
+		@Override
+		public void fillViewHolder(Object viewHolderObject, int position)
+		{
+			ViewHolder holder = (ViewHolder)viewHolderObject;
+			
+			final SearchResult resultsGroup = resultList.get(position);
+			
+			holder.title.setText(resultsGroup.title);
+			holder.details.setText("Count: " + Long.toString(resultsGroup.getCount()));
+			//TODO: Can be optimized: don't create listener each time
+			holder.popup_icon.setOnClickListener(new View.OnClickListener()
+			{
+				
+				@Override
+				public void onClick(View v)
+				{
+					showPopupMenu(v, resultsGroup);
+					
+				}
+			});			
 		}
 
 		

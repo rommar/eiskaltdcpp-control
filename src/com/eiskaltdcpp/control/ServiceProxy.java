@@ -22,21 +22,22 @@ public class ServiceProxy
 	}
 	
 	
+	
+	public static class QueueRecords
+	{
+		public HashMap<String, HashMap<String, String> > values;
+	}
+	
 	private static interface Queue
 	{
-		HashMap<String, String>[] list();
+		HashMap<String, HashMap<String, String>> list();
 		int add(
 				@JsonRpcParam(name="filename") String fileName, 
 				@JsonRpcParam(name="size") long size,
 				@JsonRpcParam(name="tth") String tth,
 				@JsonRpcParam(name="directory") String directory);
 	}
-	
-	public static class QueueRecords
-	{
-		public HashMap<String, String>[] values;
-	}
-	
+
 	
 	public static class SearchResults
 	{
