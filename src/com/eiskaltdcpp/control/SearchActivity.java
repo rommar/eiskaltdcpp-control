@@ -1,7 +1,6 @@
 package com.eiskaltdcpp.control;
 
 import com.eiskaltdcpp.control.R;
-import com.eiskaltdcpp.control.ServiceProxy.AsyncTaskResultListener;
 import com.eiskaltdcpp.control.ServiceProxy.SearchResults;
 
 

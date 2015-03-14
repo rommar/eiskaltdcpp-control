@@ -8,7 +8,6 @@ import org.json.rpc.client.HttpJsonRpcClientTransport;
 import org.json.rpc.client.JsonRpcInvoker;
 import org.json.rpc.client.JsonRpcParam;
 
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -23,7 +22,20 @@ public class ServiceProxy
 	}
 	
 	
-
+	private static interface Queue
+	{
+		HashMap<String, String>[] list();
+		int add(
+				@JsonRpcParam(name="filename") String fileName, 
+				@JsonRpcParam(name="size") long size,
+				@JsonRpcParam(name="tth") String tth,
+				@JsonRpcParam(name="directory") String directory);
+	}
+	
+	public static class QueueRecords
+	{
+		public HashMap<String, String>[] values;
+	}
 	
 	
 	public static class SearchResults
@@ -32,57 +44,13 @@ public class ServiceProxy
 	}
 	
 	
-
-	
-	
-	public static class AsyncTaskResult<T>
-	{
-		private Throwable exception;
-		private T value;
-		
-		public AsyncTaskResult(T value)
-		{
-			this.value = value;
-		}
-		
-		public AsyncTaskResult(Throwable exception)
-		{
-			this.exception = exception; 
-		}
-		
-		public Throwable getError()
-		{
-			return exception;
-		}
-		
-		public T getValue()
-		{
-			return value;
-		}		
-	}
-	
-	/*
-	public static interface AsyncTaskListener<T>
-	{
-		void onCompleted(T result);
-		void onError(Throwable error);
-		
-	}
-	*/
-
-	public static interface AsyncTaskResultListener<T>
-	{
-		void onCompleted(T result);
-		void onError(Throwable error);
-	}
-	
 	private static interface Search
 	{
 		int send( @JsonRpcParam(name="searchstring") String searchString, 
 				@JsonRpcParam(name="searchtype") int searchType, 
 				@JsonRpcParam(name="sizemode") int sizeMode, 
 				@JsonRpcParam(name="sizetype") int sizeType, 
-				@JsonRpcParam(name="size") double size, 
+				@JsonRpcParam(name="realSize") double size, 
 				@JsonRpcParam(name="huburls") String hubUrls);
 		HashMap<String, String>[] getresults(@JsonRpcParam(name="huburl") String hubUrl);
 		void clear();
@@ -90,8 +58,9 @@ public class ServiceProxy
 	
 	
 	
-	public Search search;
-	public Hub hub;
+	private Search search;
+	private Hub hub;
+	private Queue queue;
 	
 	
 	private static ServiceProxy instance;
@@ -120,72 +89,10 @@ public class ServiceProxy
 		
 		search = invoker.get(transport, "search", Search.class); 
 		hub = invoker.get(transport, "hub", Hub.class);
-
+		queue = invoker.get(transport, "queue", Queue.class);
 		
 		
 	}
-	
-	
-	
-	private static abstract class AsyncAction<ResultT> extends AsyncTask<Void, Void, AsyncTaskResult<ResultT> >
-	{
-
-		protected abstract ResultT execAction();
-		protected void onError(Throwable error)
-		{
-			if (listener != null)
-				listener.onError(error);
-		}
-		protected void onCancelled() {}
-		protected void onCompleted(ResultT result)
-		{
-			if (listener != null)
-				listener.onCompleted(result);
-		}
-		
-		private AsyncTaskResultListener<ResultT> listener;
-		
-		public AsyncAction(AsyncTaskResultListener<ResultT> resultListener)
-		{
-			super();
-			listener = resultListener;
-		}
-		
-		@Override
-		protected final AsyncTaskResult<ResultT> doInBackground(Void... params)
-		{
-			try
-			{
-				ResultT result = execAction();
-				return new AsyncTaskResult<ResultT>(result);
-			}
-			catch(Throwable error)
-			{
-				return new AsyncTaskResult<ResultT>(error);
-			}
-		}
-		
-		@Override
-		protected final void onPostExecute(AsyncTaskResult<ResultT> result)
-		{
-			Throwable error = result.getError();
-			if (error != null)
-			{
-				onError(error);
-			}
-			else if (isCancelled())
-			{
-				onCancelled();
-			}
-			else
-			{	
-				onCompleted(result.getValue());
-			}
-		}
-
-		
-	}
-
 	
 	
 	
@@ -205,17 +112,6 @@ public class ServiceProxy
 				}
 				//EXP:
 				search.clear();
-				/*
-				try
-				{
-					Thread.sleep(2000);
-				} catch (InterruptedException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				*/
-				
 				return search.send(searchString, searchType, sizeMode, sizeType, size, hubUrls);
 			}
 		};
@@ -244,6 +140,42 @@ public class ServiceProxy
 		getSearchResultsAction.execute();
 	}
 	
+	public void listQueue(final AsyncTaskResultListener<QueueRecords> listener)
+	{
+		AsyncAction<QueueRecords> getQueueRecords = new AsyncAction<QueueRecords> (listener)
+		{
+
+			@Override
+			protected QueueRecords execAction()
+			{
+				QueueRecords records = new QueueRecords();
+				records.values = queue.list();
+				
+				return records;
+			}
+		};
+
+		getQueueRecords.execute();
+
 	
+	}
+	
+	public void addQueueItem(final String fileName, final long size, final String tth, final String directory, final AsyncTaskResultListener<Boolean> listener)
+	{
+		AsyncAction<Boolean> addQueueItemAction = new AsyncAction<Boolean> (listener)
+		{
+
+			@Override
+			protected Boolean execAction()
+			{
+				int result = queue.add(fileName, size, tth, directory);
+				return result == 0;
+			}
+	
+	
+		};
+		
+		addQueueItemAction.execute();
+	}
 	
 }

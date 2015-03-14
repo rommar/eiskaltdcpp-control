@@ -129,6 +129,7 @@ public class SearchUi
 			
 			holder.title.setText(resultsGroup.title);
 			holder.details.setText("Count: " + Long.toString(resultsGroup.getCount()));
+			//TODO: Can be optimized: don't create listener each time
 			holder.popup_icon.setOnClickListener(new View.OnClickListener()
 			{
 				
@@ -175,6 +176,12 @@ public class SearchUi
 		private void downloadItemClicked(SearchResult resultsGroup)
 		{
 			Log.i("downloadItemClicked", "downloadItemClicked");
+			
+			DownloadQueueSingleton.getInstance().addItem(
+					resultsGroup.getFirstItem().fileName, 
+					resultsGroup.realSize, 
+					resultsGroup.tth, 
+					"");
 		}
 
 		
@@ -186,8 +193,7 @@ public class SearchUi
 
 		private ArrayList<SearchResult> results = new ArrayList<SearchResult>();
 		private SearchResultItemAdapter adapter = null;
-		//EXP: make private
-		public SearchListener listener = null;
+		private SearchListener listener = null;
 		
 		
 		private static SearchResultsDataModel instance = null;

@@ -68,6 +68,25 @@ public class MainActivity extends ActionBarActivity
 	}
 	
 	
+	public static class DownloadQueueFragment extends Fragment
+	{
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+		{
+			/*
+			View view = inflater.inflate(R.layout.download_queue, container, false);
+			final ListView listview = (ListView)view.findViewById(R.id.download_queue_list_view);
+		    listview.setAdapter(DownloadQueueUi.SearchResultsDataModel.getInstance().getListViewAdapter());
+		    return view;
+		    */
+			
+			return null;
+			
+			
+		}
+		
+	}
+	
 	public static class HubsListFragment extends Fragment
 	{
 		
@@ -113,19 +132,14 @@ public class MainActivity extends ActionBarActivity
         
         SearchUi.SearchResultsDataModel.getInstance().initialize(this);
         
-        /*
-		Tab tab = actionBar.newTab();
-		tab.setText("Hubs List");
-		tab.setTabListener(new TabListener<HubsListFragment>(this, "hubs", HubsListFragment.class));
-		actionBar.addTab(tab);
-		
-		tab = actionBar.newTab();
-		tab.setText("Search Results");
-		tab.setTabListener(new TabListener<SearchResultsFragment>(this, "search_results", SearchResultsFragment.class));
-		actionBar.addTab(tab);
-		*/
-		
+	
         Tab tab = actionBar.newTab();
+		tab.setText("Download Queue");
+		DownloadQueueFragment queueFragment = new DownloadQueueFragment();
+		tab.setTabListener(new TabListener(queueFragment));
+		actionBar.addTab(tab);
+        
+        tab = actionBar.newTab();
 		tab.setText("Hubs List");
 		HubsListFragment hubsFragment = new HubsListFragment();
 		tab.setTabListener(new TabListener(hubsFragment));
@@ -148,6 +162,8 @@ public class MainActivity extends ActionBarActivity
 		fragmentTransaction.commit();
 		
 		
+		//EXP:
+		DownloadQueueSingleton.getInstance();
         
     }
     

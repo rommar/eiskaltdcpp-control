@@ -1,16 +1,12 @@
 package com.eiskaltdcpp.control;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 
-import com.eiskaltdcpp.control.ServiceProxy.AsyncTaskResultListener;
 import com.eiskaltdcpp.control.ServiceProxy.SearchResults;
 
 
@@ -32,17 +28,25 @@ public class Searcher
 	{		
 		public String title = "";
 		public int slots = 0;
+		public String fileName = "";		
 	}
 	
 	public static class SearchResult
 	{
 		public String title = "";
+		public String tth = "";
+		public long realSize = 0;
 		public HashMap<String, SearchResultItem> children = new LinkedHashMap<String, SearchResultItem>();
 		public long getCount()
 		{
 			return children.size();
 		}
 		
+		public SearchResultItem getFirstItem()
+		{
+			//TODO: Is there any less ugly way to get first item from map?
+			return children.entrySet().iterator().next().getValue();
+		}
 		
 	}
 		
@@ -144,6 +148,11 @@ public class Searcher
 			return null;
 		SearchResult result = new SearchResult();
 		result.title = resultMap.get("Filename");
+		result.tth = resultMap.get("TTH");
+		//TODO: add possible exception catch
+		result.realSize = Long.parseLong(resultMap.get("Real Size")); 
+		
+		
 		
 		return result;
 		
@@ -160,6 +169,7 @@ public class Searcher
 		
 		SearchResultItem resultItem = new SearchResultItem();
 		resultItem.title = resultMap.get("Filename");
+		resultItem.fileName = resultMap.get("Filename");
 		
 		if (resultMap.containsKey("Slots"))
 		{
@@ -180,54 +190,7 @@ public class Searcher
 		
 	}
 	
-	public static class PeriodicTask
-	{
-		//private long timerCount = 0;
-		//private final long maxTimerCount;
-		private long time = 0;
-		private final long maxTime;
-		private final long period;
-		private Handler timerHandler = new Handler();
-		private Runnable targetRunnable;
-		
-		private Runnable timerRunnable = new Runnable()
-		    {
-		    	public void run()
-		    	{
-		    		if (time >= maxTime)
-		    			return;
-		    		
-		    		
-		    		targetRunnable.run();
-		    		
-					timerHandler.postDelayed(this, period);
-					time += period;
-		    	}
-		    };
-		
-		public PeriodicTask(long durationMs, long periodMs, Runnable r)
-		{
-			maxTime = durationMs;
-			period = periodMs;
-			targetRunnable = r;
-			
-		}
-		
-		public void start(long delayMs)
-		{
-			time = 0;
-			timerHandler.postDelayed(timerRunnable, delayMs);
-		}
-		
-		public void stop()
-		{
-			time = maxTime;
-		}
-	}
-	
-	
-    
-    PeriodicTask searchResultsTask = new PeriodicTask(60000, 5000, new Runnable()
+	PeriodicTask searchResultsTask = new PeriodicTask(60000, 5000, new Runnable()
 	{
 		
 		@Override
