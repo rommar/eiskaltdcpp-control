@@ -13,6 +13,7 @@ public abstract class ViewHolderArrayAdapter<T> extends ArrayAdapter<T>
 {
 	private Context context = null;
 	int resource;
+	ArrayList<T> array;
 	
 	public ViewHolderArrayAdapter(Context context, int resource, ArrayList<T> resultList)
 	{
@@ -20,6 +21,7 @@ public abstract class ViewHolderArrayAdapter<T> extends ArrayAdapter<T>
 		
 		this.context = context;
 		this.resource = resource;
+		this.array = resultList;
 	}
 
 	public abstract Object createViewHolder(View view);
@@ -46,6 +48,10 @@ public abstract class ViewHolderArrayAdapter<T> extends ArrayAdapter<T>
 		return context;
 	}
 
+	public ArrayList<T> getArray()
+	{
+		return array;
+	}
 	
 	
 }

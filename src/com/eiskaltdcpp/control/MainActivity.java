@@ -73,14 +73,13 @@ public class MainActivity extends ActionBarActivity
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 		{
-			/*
-			View view = inflater.inflate(R.layout.download_queue, container, false);
-			final ListView listview = (ListView)view.findViewById(R.id.download_queue_list_view);
-		    listview.setAdapter(DownloadQueueUi.SearchResultsDataModel.getInstance().getListViewAdapter());
+			//TODO: Rename layouts which are common for download queue and search results
+			View view = inflater.inflate(R.layout.search_results, container, false);
+			final ListView listview = (ListView)view.findViewById(R.id.search_results_list_view);
+		    listview.setAdapter(DownloadQueueUi.QueueDataModel.getInstance().getListViewAdapter());
 		    return view;
-		    */
+		    
 			
-			return null;
 			
 			
 		}
@@ -131,7 +130,7 @@ public class MainActivity extends ActionBarActivity
 
         
         SearchUi.SearchResultsDataModel.getInstance().initialize(this);
-        
+        DownloadQueueUi.QueueDataModel.getInstance().initialize(this);
 	
         Tab tab = actionBar.newTab();
 		tab.setText("Download Queue");
@@ -154,6 +153,7 @@ public class MainActivity extends ActionBarActivity
 		
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.add(R.id.view_group, queueFragment);
 		fragmentTransaction.add(R.id.view_group, hubsFragment);
 		fragmentTransaction.add(R.id.view_group, searchResultFragment);
 		fragmentTransaction.detach(searchResultFragment);

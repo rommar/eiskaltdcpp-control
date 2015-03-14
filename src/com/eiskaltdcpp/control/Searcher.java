@@ -211,7 +211,7 @@ public class Searcher
 					public void onCompleted(SearchResults results)
 					{
 						Log.i("SearchActivityTimer", "Completed");
-						Log.i("SearchActivityTimer", "Results count: " + Integer.toString(Searcher.getInstance().getCount()));
+						//Log.i("SearchActivityTimer", "Results count: " + Integer.toString(Searcher.getInstance().getCount()));
 						
 						if (results.values == null)
 						{

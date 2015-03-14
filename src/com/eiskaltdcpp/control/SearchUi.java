@@ -76,31 +76,10 @@ public class SearchUi
 	
 	public static class SearchResultItemAdapter extends ViewHolderArrayAdapter<SearchResult>
 	{
-
-		private Searcher searcher = null;
-		private ArrayList<SearchResult> resultList = null;
 		
 		public SearchResultItemAdapter(Context context, ArrayList<SearchResult> resultList)
 		{
 			super(context, R.layout.result_item, resultList);
-			
-			if (searcher == null)
-				searcher = Searcher.getInstance();
-			this.resultList = resultList;
-		}
-		@Override
-		public void notifyDataSetChanged()
-		{
-			super.notifyDataSetChanged();
-		}
-		
-		private static class ViewHolder
-		{
-			public TextView title;
-			public TextView details;
-			public ImageView icon;
-			public ImageView popup_icon;
-			
 		}
 		
 		public void showPopupMenu(View view, final SearchResult resultsGroup)
@@ -147,19 +126,15 @@ public class SearchUi
 		@Override
 		public Object createViewHolder(View view)
 		{
-			ViewHolder holder = new ViewHolder();
-			holder.title =  (TextView)view.findViewById(R.id.resource_title);
-			holder.details = (TextView)view.findViewById(R.id.resource_details);
-			holder.icon = (ImageView)view.findViewById(R.id.resource_type_icon);
-			holder.popup_icon = (ImageView)view.findViewById(R.id.result_item_popup_icon);
-			return holder;
+			return new ItemViewHolder(view);
 		}
+		
 		@Override
 		public void fillViewHolder(Object viewHolderObject, int position)
 		{
-			ViewHolder holder = (ViewHolder)viewHolderObject;
+			ItemViewHolder holder = (ItemViewHolder)viewHolderObject;
 			
-			final SearchResult resultsGroup = resultList.get(position);
+			final SearchResult resultsGroup = getArray().get(position);
 			
 			holder.title.setText(resultsGroup.title);
 			holder.details.setText("Count: " + Long.toString(resultsGroup.getCount()));

@@ -9,7 +9,7 @@ public class DownloadQueueSingleton
 
 	public static interface DownloadQueueListenerInterface
 	{
-		void onDownloadQueueUpdated();
+		void onDownloadQueueUpdated(QueueRecords records);
 	}
 	
 	private static DownloadQueueSingleton instance;
@@ -28,6 +28,8 @@ public class DownloadQueueSingleton
 	{
 		queueListTask.start(2000);
 	}
+	
+	DownloadQueueListenerInterface listener;
 	
 	PeriodicTask queueListTask = new PeriodicTask(Long.MAX_VALUE, 5000, new Runnable()
 	{
@@ -52,11 +54,23 @@ public class DownloadQueueSingleton
 					{
 						Log.i("queueListTask", "Size: " + Integer.toString(result.values.size()));
 					}
+					
+					if (listener != null)
+					{
+						listener.onDownloadQueueUpdated(result);
+					}
+					
+					
 				}
 			});
 			
 		}
 	});
+	
+	void setListener(DownloadQueueListenerInterface listener)
+	{
+		this.listener = listener;
+	}
 	
 	void addItem(String fileName, long size, String tth, String directory)	
 	{
