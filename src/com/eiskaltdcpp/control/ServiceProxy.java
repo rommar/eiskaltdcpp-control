@@ -30,7 +30,7 @@ public class ServiceProxy
 	
 	private static interface Queue
 	{
-		HashMap<String, HashMap<String, String>> list();
+		HashMap<String, com.google.gson.internal.StringMap<String> > list();
 		int add(
 				@JsonRpcParam(name="filename") String fileName, 
 				@JsonRpcParam(name="size") long size,
@@ -149,9 +149,25 @@ public class ServiceProxy
 			@Override
 			protected QueueRecords execAction()
 			{
-				QueueRecords records = new QueueRecords();
-				records.values = queue.list();
+				// Workaround. Gson doesn't support (de)serialization of maps containing maps.
+				// See also: stackoverflow.com/questions/4547739/how-to-serialize-a-map-of-a-map-with-gson
+				HashMap<String, com.google.gson.internal.StringMap<String> > values = queue.list();
 				
+				QueueRecords records = new QueueRecords();
+				if (values == null)
+				{
+					records.values = null;
+				}
+				else
+				{
+					records.values = new HashMap<String, HashMap<String,String>>();
+					for (HashMap.Entry<String, com.google.gson.internal.StringMap<String> > entry : values.entrySet())
+					{
+						HashMap<String, String> convertedValue = new HashMap<String, String>();
+						convertedValue.putAll(entry.getValue());
+						records.values.put(entry.getKey(), convertedValue);
+					}
+				}
 				return records;
 			}
 		};

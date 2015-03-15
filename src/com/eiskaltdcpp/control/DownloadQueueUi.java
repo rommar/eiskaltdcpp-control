@@ -18,6 +18,7 @@ public class DownloadQueueUi
 	public static class QueueItem
 	{
 		public String title = "";
+		public String status = "";
 	}
 	
 	public static class QueueViewAdapter extends ViewHolderArrayAdapter<QueueItem>
@@ -43,6 +44,7 @@ public class DownloadQueueUi
 			final QueueItem item = getArray().get(position);
 			
 			holder.title.setText(item.title);
+			holder.details.setText(item.status);
 			
 		}
 		
@@ -86,8 +88,16 @@ public class DownloadQueueUi
 					for (HashMap.Entry<String, HashMap<String, String> > entry : records.values.entrySet())
 					{
 						QueueItem newItem = new QueueItem();
-						newItem.title = entry.getKey();
+						HashMap<String, String> fields = entry.getValue();
+						
+						
+						newItem.title = fields.get("Filename");
+						String downloaded = fields.get("Downloaded");
+						String size = fields.get("Size");
+						String status = fields.get("Status");
+						newItem.status = downloaded + "; " + size + "; " + status;
 						items.add(newItem);
+						
 					}
 					
 					adapter.notifyDataSetChanged();
