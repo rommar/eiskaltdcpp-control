@@ -8,8 +8,6 @@ import org.json.rpc.client.HttpJsonRpcClientTransport;
 import org.json.rpc.client.JsonRpcInvoker;
 import org.json.rpc.client.JsonRpcParam;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 

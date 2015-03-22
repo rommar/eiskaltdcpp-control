@@ -1,34 +1,16 @@
 package com.eiskaltdcpp.control;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.lang.Boolean;
-
-import android.app.Activity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -36,10 +18,48 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import com.eiskaltdcpp.control.R;
-import com.eiskaltdcpp.control.SearchUi;
 
 public class MainActivity extends ActionBarActivity 
 {
+	
+	private static class Views
+	{
+		public static Views getInstance()
+		{
+			if (instance == null)
+				instance = new Views();
+			return instance;
+		}
+		
+		private SearchResultsView searchResultsView;
+		private DownloadQueueView downloadQueueView;
+		
+		
+		public void initSearchResultsView(Context context)
+		{
+			searchResultsView = Core.getInstance().createSearchResultsView(context);
+		}
+		
+		public SearchResultsView getSearchResultsView()
+		{
+			return searchResultsView;
+		}
+		
+		public void initDownloadQueueView(Context context)
+		{
+			downloadQueueView = Core.getInstance().createDownloadQueueView(context);
+		}
+		
+		public DownloadQueueView getDownloadQueueView()
+		{
+			return downloadQueueView;
+		}
+		
+		private Views() { }
+		private static Views instance = null;
+		
+	}
+	
 	public static class TabListener implements ActionBar.TabListener
 	{
 	    private final Fragment mFragment;
@@ -76,7 +96,8 @@ public class MainActivity extends ActionBarActivity
 			//TODO: Rename layouts which are common for download queue and search results
 			View view = inflater.inflate(R.layout.search_results, container, false);
 			final ListView listview = (ListView)view.findViewById(R.id.search_results_list_view);
-		    listview.setAdapter(DownloadQueueUi.QueueDataModel.getInstance().getListViewAdapter());
+			
+		    listview.setAdapter(Views.getInstance().getDownloadQueueView().getListViewAdapter());
 		    return view;
 		    
 			
@@ -101,7 +122,7 @@ public class MainActivity extends ActionBarActivity
 		{
 			View view = inflater.inflate(R.layout.search_results, container, false);
 			final ListView listview = (ListView)view.findViewById(R.id.search_results_list_view);
-		    listview.setAdapter(SearchUi.SearchResultsDataModel.getInstance().getListViewAdapter());
+			listview.setAdapter(Views.getInstance().getSearchResultsView().getListViewAdapter());
 		    return view;
 
 		}
@@ -125,13 +146,16 @@ public class MainActivity extends ActionBarActivity
        
         setContentView(R.layout.main);
         
+        Views.getInstance().initDownloadQueueView(this);
+        Views.getInstance().initSearchResultsView(this);
+		
+		Views.getInstance().downloadQueueView = Core.getInstance().createDownloadQueueView(this);
+		Views.getInstance().searchResultsView = Core.getInstance().createSearchResultsView(this);
+        
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         
-        SearchUi.SearchResultsDataModel.getInstance().initialize(this);
-        DownloadQueueUi.QueueDataModel.getInstance().initialize(this);
-	
         Tab tab = actionBar.newTab();
 		tab.setText("Download Queue");
 		DownloadQueueFragment queueFragment = new DownloadQueueFragment();
@@ -162,8 +186,7 @@ public class MainActivity extends ActionBarActivity
 		fragmentTransaction.commit();
 		
 		
-		//EXP:
-		DownloadQueueSingleton.getInstance();
+		
         
     }
     
@@ -188,7 +211,7 @@ public class MainActivity extends ActionBarActivity
             	startActivity(intent);
                 return true;
             case R.id.action_stop_search:
-            	Searcher.getInstance().stopSearch();
+            	Core.getInstance().getSearchController().stopSearch();
             	return true;
             default:
                 return super.onOptionsItemSelected(item);

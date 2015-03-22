@@ -9,24 +9,24 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 
-public abstract class ViewHolderArrayAdapter<T> extends ArrayAdapter<T> 
+public abstract class ViewHolderArrayAdapter<ItemType, HolderType> extends ArrayAdapter<ItemType> 
 {
 	private Context context = null;
 	int resource;
-	ArrayList<T> array;
+	ArrayList<ItemType> array;
 	
-	public ViewHolderArrayAdapter(Context context, int resource, ArrayList<T> resultList)
+	public ViewHolderArrayAdapter(Context context, int resource, ArrayList<ItemType> resultList)
 	{
 		super(context, resource, resultList);
-		
 		this.context = context;
 		this.resource = resource;
 		this.array = resultList;
 	}
 
-	public abstract Object createViewHolder(View view);
-	public abstract void fillViewHolder(Object viewHolder, int position);
+	public abstract HolderType createViewHolder(View view);
+	public abstract void fillViewHolder(HolderType viewHolder, int position);
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public final View getView(int position, View convertView, ViewGroup parent)
 	{
@@ -39,7 +39,7 @@ public abstract class ViewHolderArrayAdapter<T> extends ArrayAdapter<T>
 			convertView.setTag(holder);
 		}
 		
-		fillViewHolder(convertView.getTag(), position);
+		fillViewHolder((HolderType)convertView.getTag(), position);
 		return convertView;
 	}
 	
@@ -48,7 +48,7 @@ public abstract class ViewHolderArrayAdapter<T> extends ArrayAdapter<T>
 		return context;
 	}
 
-	public ArrayList<T> getArray()
+	public ArrayList<ItemType> getArray()
 	{
 		return array;
 	}

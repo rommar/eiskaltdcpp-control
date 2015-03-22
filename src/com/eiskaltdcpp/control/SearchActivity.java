@@ -1,12 +1,7 @@
 package com.eiskaltdcpp.control;
 
 import com.eiskaltdcpp.control.R;
-import com.eiskaltdcpp.control.ServiceProxy.SearchResults;
-
-
-import android.app.AlertDialog;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 
 import android.view.View;
@@ -23,7 +18,7 @@ public class SearchActivity extends ActionBarActivity
         setContentView(R.layout.search);
         
         EditText edit = (EditText) findViewById(R.id.editTextSearchString);
-        edit.setText("time");
+        
         
 	}
 	
@@ -34,7 +29,8 @@ public class SearchActivity extends ActionBarActivity
 		
     	String searchString = edit.getText().toString();
     	
-    	Searcher.getInstance().sendSearch(searchString, this);
+    	//Searcher.getInstance().sendSearch(searchString, this);
+    	Core.getInstance().getSearchController().sendSearch(searchString, this);
     	
     	
     	//finish();

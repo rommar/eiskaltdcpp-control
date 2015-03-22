@@ -4,34 +4,20 @@ import android.util.Log;
 
 import com.eiskaltdcpp.control.ServiceProxy.QueueRecords;
 
-public class DownloadQueueSingleton
+public class DownloadQueueController
 {
 
-	public static interface DownloadQueueListenerInterface
+	private DownloadQueueDataModel model;
+	
+	public DownloadQueueController(DownloadQueueDataModel model)
 	{
-		void onDownloadQueueUpdated(QueueRecords records);
-	}
-	
-	private static DownloadQueueSingleton instance;
-	
-	public static DownloadQueueSingleton getInstance()
-	{
-		if (instance == null)
-		{
-			instance = new DownloadQueueSingleton();
-		}
-		return instance;
-	}
-	
-	
-	private DownloadQueueSingleton()
-	{
+		this.model = model;
 		queueListTask.start(2000);
 	}
 	
-	DownloadQueueListenerInterface listener;
+	//DownloadQueueListenerInterface listener;
 	
-	PeriodicTask queueListTask = new PeriodicTask(Long.MAX_VALUE, 5000, new Runnable()
+	private PeriodicTask queueListTask = new PeriodicTask(Long.MAX_VALUE, 5000, new Runnable()
 	{
 		@Override
 		public void run()
@@ -55,10 +41,7 @@ public class DownloadQueueSingleton
 						Log.i("queueListTask", "Size: " + Integer.toString(result.values.size()));
 					}
 					
-					if (listener != null)
-					{
-						listener.onDownloadQueueUpdated(result);
-					}
+					model.setQueueRecords(result);
 					
 					
 				}
@@ -67,10 +50,12 @@ public class DownloadQueueSingleton
 		}
 	});
 	
+	/*
 	void setListener(DownloadQueueListenerInterface listener)
 	{
 		this.listener = listener;
 	}
+	*/
 	
 	void addItem(String fileName, long size, String tth, String directory)	
 	{
