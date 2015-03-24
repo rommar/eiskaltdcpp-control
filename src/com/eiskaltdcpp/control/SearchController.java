@@ -10,22 +10,13 @@ import com.eiskaltdcpp.control.ServiceProxy.SearchResults;
 public class SearchController
 {
 	private SearchDataModel model;
-	//private SearchResultsView view;
 	private ViewUserActionsListener listener;
 
 	public SearchController(SearchDataModel model)
 	{
 		this.model = model;
 		this.listener = new ViewUserActionsListener();
-		//this.view.getUserActionsNotifier().subscribe(new ViewUserActionsListener());
 	}
-	
-	/*
-	public void setView(SearchResultsView view)
-	{
-		view.getUserActionsNotifier().subscribe(listener);
-	}
-	*/
 	
 	public void sendSearch(String searchString, Context context)
 	{

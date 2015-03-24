@@ -33,7 +33,7 @@ public class Core
 	
 	public DownloadQueueView createDownloadQueueView(Context context)
 	{
-		DownloadQueueView view = new DownloadQueueView(context, null);
+		DownloadQueueView view = new DownloadQueueView(context, downloadQueueController.getUserActionsListener());
 		view.setModel(downloadQueueModel);
 		return view;
 	}

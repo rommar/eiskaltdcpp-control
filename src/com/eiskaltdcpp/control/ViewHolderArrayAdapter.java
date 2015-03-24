@@ -23,8 +23,8 @@ public abstract class ViewHolderArrayAdapter<ItemType, HolderType> extends Array
 		this.array = resultList;
 	}
 
-	public abstract HolderType createViewHolder(View view);
-	public abstract void fillViewHolder(HolderType viewHolder, int position);
+	protected abstract HolderType createViewHolder(View view);
+	protected abstract void fillViewHolder(HolderType viewHolder, int position);
 	
 	@SuppressWarnings("unchecked")
 	@Override

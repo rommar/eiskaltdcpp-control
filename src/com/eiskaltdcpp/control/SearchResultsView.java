@@ -91,86 +91,44 @@ public class SearchResultsView extends AbstractView<SearchDataModel, SearchDataM
 		
 	}
 	
-	private static class SearchResultItemAdapter extends ViewHolderArrayAdapter<SearchResult, ItemViewHolder>
+	private static class SearchResultItemAdapter extends StandardListViewAdapter<SearchResult>
 	{
 		private UserActionsListener actionsListener;
 		public SearchResultItemAdapter(Context context, ArrayList<SearchResult> resultList, UserActionsListener userActionsListener)
 		{
-			super(context, R.layout.result_item, resultList);
+			super(context, R.layout.result_item, resultList, R.menu.search_results_popup_menu);
 			this.actionsListener = userActionsListener;
-		}
-		
-		public void showPopupMenu(View view, final SearchResult resultsGroup)
-		{
-			PopupMenu popup = new PopupMenu(getContext(), view);
-			
-			MenuInflater inflater = popup.getMenuInflater();
-		    inflater.inflate(R.menu.search_results_popup_menu, popup.getMenu());
-		    
-		    popup.setOnMenuItemClickListener(new OnMenuItemClickListener()
-			{
-				
-				@Override
-				public boolean onMenuItemClick(MenuItem item)
-				{
-					switch (item.getItemId()) 
-					{
-			        case R.id.search_result_action_download:
-			            downloadItemClicked(resultsGroup);
-			            return true;
-
-			        default:
-			        	return false;
-					}
-				}
-			});
-
-		    
-		    popup.show();
-
 		}
 		
 		private void downloadItemClicked(final SearchResult resultsGroup)
 		{
-			actionsListener.downloadItemClicked(resultsGroup);
-			/*
-			Log.i("downloadItemClicked", "downloadItemClicked");
-			
-			DownloadQueueController.getInstance().addItem(
-					resultsGroup.getFirstItem().fileName, 
-					resultsGroup.realSize, 
-					resultsGroup.tth, 
-					"");
-			*/
-		}
-		
-		@Override
-		public ItemViewHolder createViewHolder(View view)
-		{
-			return new ItemViewHolder(view);
-		}
-		
-		@Override
-		public void fillViewHolder(ItemViewHolder holder, int position)
-		{
-			final SearchResult resultsGroup = getArray().get(position);
-			
-			holder.title.setText(resultsGroup.title);
-			holder.details.setText("Count: " + Long.toString(resultsGroup.getCount()));
-			//TODO: Can be optimized: don't create listener each time
-			holder.popup_icon.setOnClickListener(new View.OnClickListener()
-			{
-				
-				@Override
-				public void onClick(View v)
-				{
-					showPopupMenu(v, resultsGroup);
-					
-				}
-			});			
+			if (actionsListener != null)
+				actionsListener.downloadItemClicked(resultsGroup);
 		}
 
-		
+		@Override
+		protected String getItemTitle(SearchResult item)
+		{
+			return item.title;
+		}
+
+		@Override
+		protected String getItemDetails(SearchResult item)
+		{
+			return "Count: " + Long.toString(item.getCount());
+		}
+
+		@Override
+		protected boolean onMenuItemClicked(int resource, SearchResult resultsGroup)
+		{
+			switch (resource) 
+			{
+	        case R.id.search_result_action_download:
+	            downloadItemClicked(resultsGroup);
+	            return true;
+			}
+			return false;
+		}
 		
 	}
 	

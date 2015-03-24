@@ -34,6 +34,8 @@ public class ServiceProxy
 				@JsonRpcParam(name="size") long size,
 				@JsonRpcParam(name="tth") String tth,
 				@JsonRpcParam(name="directory") String directory);
+		
+		int remove (@JsonRpcParam(name="target") String target);
 	}
 
 	
@@ -191,6 +193,21 @@ public class ServiceProxy
 		};
 		
 		addQueueItemAction.execute();
+	}
+	
+	public void removeQueueItem(final String target, final AsyncTaskResultListener<Boolean> listener)
+	{
+		AsyncAction<Boolean> removeQueueItem = new AsyncAction<Boolean> (listener)
+		{
+			@Override
+			protected Boolean execAction()
+			{
+				int result = queue.remove(target);
+				return result == 0;
+			}
+		};
+				
+		removeQueueItem.execute();
 	}
 	
 }

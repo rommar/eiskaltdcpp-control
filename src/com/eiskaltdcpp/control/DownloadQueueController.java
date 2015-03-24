@@ -2,20 +2,26 @@ package com.eiskaltdcpp.control;
 
 import android.util.Log;
 
+import com.eiskaltdcpp.control.DownloadQueueView.QueueItem;
+import com.eiskaltdcpp.control.DownloadQueueView.UserActionsListener;
 import com.eiskaltdcpp.control.ServiceProxy.QueueRecords;
 
 public class DownloadQueueController
 {
-
 	private DownloadQueueDataModel model;
+	private ViewUserActionsListener userActionsListener;
 	
 	public DownloadQueueController(DownloadQueueDataModel model)
 	{
 		this.model = model;
+		userActionsListener = new ViewUserActionsListener();
 		queueListTask.start(2000);
 	}
 	
-	//DownloadQueueListenerInterface listener;
+	protected UserActionsListener getUserActionsListener()
+	{
+		return userActionsListener;
+	}
 	
 	private PeriodicTask queueListTask = new PeriodicTask(Long.MAX_VALUE, 5000, new Runnable()
 	{
@@ -50,14 +56,8 @@ public class DownloadQueueController
 		}
 	});
 	
-	/*
-	void setListener(DownloadQueueListenerInterface listener)
-	{
-		this.listener = listener;
-	}
-	*/
 	
-	void addItem(String fileName, long size, String tth, String directory)	
+	public void addItem(String fileName, long size, String tth, String directory)	
 	{
 		ServiceProxy.getInstance().addQueueItem(fileName, size, tth, directory, new AsyncTaskResultListener<Boolean>()
 		{
@@ -77,6 +77,36 @@ public class DownloadQueueController
 				
 			}
 		});
+	}
+	
+	private class ViewUserActionsListener implements UserActionsListener
+	{
+
+		@Override
+		public void removeQueueItem(QueueItem item)
+		{
+			Log.i("ViewUserActionsListener", "removeQueueItem");
+			
+			ServiceProxy.getInstance().removeQueueItem(item.target, new AsyncTaskResultListener<Boolean>()
+			{
+				
+				@Override
+				public void onError(Throwable error)
+				{
+					Log.e("removeQueueItem", "Error", error);
+					
+				}
+				
+				@Override
+				public void onCompleted(Boolean result)
+				{
+					Log.i("removeQueueItem", "OK");
+					
+				}
+			});
+			
+		}
+	
 	}
 	
 }

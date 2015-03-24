@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Context;
-import android.view.View;
-
 import com.eiskaltdcpp.control.DownloadQueueDataModel.DownloadQueueModelListener;
 import com.eiskaltdcpp.control.ServiceProxy.QueueRecords;
 
@@ -19,14 +17,14 @@ public class DownloadQueueView extends AbstractView<DownloadQueueDataModel, Down
 	
 	public static interface UserActionsListener 
 	{
-		
+		void removeQueueItem(QueueItem item);
 	}
 	
 	public DownloadQueueView(Context context, UserActionsListener userActionsListener)
 	{
 		items = new ArrayList<QueueItem>();
-		adapter = new QueueViewAdapter(context, items);
 		actionsListener = userActionsListener;
+		adapter = new QueueViewAdapter(context, items, actionsListener);
 	}
 	
 	public QueueViewAdapter getListViewAdapter()
@@ -41,10 +39,12 @@ public class DownloadQueueView extends AbstractView<DownloadQueueDataModel, Down
 	}	
 		
 	
-	private static class QueueItem
+	public static class QueueItem
 	{
+		public String target = "";
 		public String title = "";
 		public String status = "";
+		
 	}
 	
 	private class Listener implements DownloadQueueModelListener
@@ -53,51 +53,63 @@ public class DownloadQueueView extends AbstractView<DownloadQueueDataModel, Down
 		public void onUpdated(QueueRecords records)
 		{
 			items.clear();
-			if (records.values == null)
-				return;
-			
-			//Log.i("onDownloadQueueUpdated", "OK");
-			
-			for (HashMap.Entry<String, HashMap<String, String> > entry : records.values.entrySet())
+			if (records.values != null)
 			{
-				QueueItem newItem = new QueueItem();
-				HashMap<String, String> fields = entry.getValue();
-				
-				
-				newItem.title = fields.get("Filename");
-				String downloaded = fields.get("Downloaded");
-				String size = fields.get("Size");
-				String status = fields.get("Status");
-				newItem.status = downloaded + "; " + size + "; " + status;
-				items.add(newItem);
-				
+				for (HashMap.Entry<String, HashMap<String, String> > entry : records.values.entrySet())
+				{
+					QueueItem newItem = new QueueItem();
+					HashMap<String, String> fields = entry.getValue();
+					
+					newItem.target = entry.getKey();
+					
+					newItem.title = fields.get("Filename");
+					String downloaded = fields.get("Downloaded");
+					String size = fields.get("Size");
+					String status = fields.get("Status");
+					newItem.status = downloaded + "; " + size + "; " + status;
+					items.add(newItem);
+					
+				}
 			}
-			
 			adapter.notifyDataSetChanged();
 		}
 	}
 	
-	private static class QueueViewAdapter extends ViewHolderArrayAdapter<QueueItem, ItemViewHolder>
+	private static class QueueViewAdapter extends StandardListViewAdapter<QueueItem>
 	{
-		public QueueViewAdapter(Context context, ArrayList<QueueItem> resultList)
+		private UserActionsListener actionsListener;
+		
+		public QueueViewAdapter(Context context, ArrayList<QueueItem> resultList, UserActionsListener actionsListener)
 		{
-			super(context, R.layout.result_item, resultList);
+			super(context, R.layout.result_item, resultList, R.menu.download_queue_popup_menu);
+			this.actionsListener = actionsListener;
 		}
 
 		@Override
-		public ItemViewHolder createViewHolder(View view)
+		protected String getItemTitle(QueueItem item)
 		{
-			return new ItemViewHolder(view);
+			return item.title;
 		}
 
 		@Override
-		public void fillViewHolder(ItemViewHolder viewHolder, int position)
+		protected String getItemDetails(QueueItem item)
 		{
-			final QueueItem item = getArray().get(position);
-			viewHolder.title.setText(item.title);
-			viewHolder.details.setText(item.status);
-			
+			return item.status;
 		}
+
+		@Override
+		protected boolean onMenuItemClicked(int resource, QueueItem item)
+		{
+			switch (resource)
+			{
+			case R.id.download_queue_action_remove:
+				if (actionsListener != null)
+					actionsListener.removeQueueItem(item);
+			}
+			return false;
+		}
+
+		
 		
 	}
 	

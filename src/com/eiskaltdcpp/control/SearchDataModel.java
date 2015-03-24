@@ -37,12 +37,12 @@ public class SearchDataModel extends AbstractPublisher<SearchDataModel.SearchDat
 	public static interface SearchDataModelListener
 	{
 		void onClearResults();
-		void onNewResult(SearchDataModel.SearchResult result);
-		void onUpdateResult(SearchDataModel.SearchResult result);
+		void onNewResult(SearchResult result);
+		void onUpdateResult(SearchResult result);
 		void onBatchUpdateCompleted();
 	}
 	
-	private HashMap<String, SearchDataModel.SearchResult> searchResults = new LinkedHashMap<String, SearchDataModel.SearchResult>();
+	private HashMap<String, SearchResult> searchResults = new LinkedHashMap<String, SearchResult>();
 	
 	public void updateResults(SearchResults results)
 	{
@@ -60,14 +60,14 @@ public class SearchDataModel extends AbstractPublisher<SearchDataModel.SearchDat
 					// If no result group exists for TTH
 					if (!searchResults.containsKey(tth))
 					{
-						SearchDataModel.SearchResult resultGroup = searchResultMapToObject(resultMap);
+						SearchResult resultGroup = searchResultMapToObject(resultMap);
 						updateSearchResultGroup(resultGroup, resultMap);
 						searchResults.put(tth, resultGroup);
 						notifyNewResult(resultGroup);
 					}
 					else // results group exists
 					{
-						SearchDataModel.SearchResult resultGroup = searchResults.get(tth);
+						SearchResult resultGroup = searchResults.get(tth);
 						
 						if (!resultGroup.children.containsKey(cid))
 						{
@@ -96,13 +96,13 @@ public class SearchDataModel extends AbstractPublisher<SearchDataModel.SearchDat
 		return searchResults.size();
 	}
 	
-	public Collection<SearchDataModel.SearchResult> getResults()
+	public Collection<SearchResult> getResults()
 	{
 		return searchResults.values();
 	}
 	
 	
-	private void notifyNewResult(final SearchDataModel.SearchResult resultGroup)
+	private void notifyNewResult(final SearchResult resultGroup)
 	{
 		notifyEach(new Notificator<SearchDataModel.SearchDataModelListener>()
 		{
@@ -114,7 +114,7 @@ public class SearchDataModel extends AbstractPublisher<SearchDataModel.SearchDat
 		});
 	}
 	
-	private void notifyResultUpdated(final SearchDataModel.SearchResult resultGroup)
+	private void notifyResultUpdated(final SearchResult resultGroup)
 	{
 		notifyEach(new Notificator<SearchDataModel.SearchDataModelListener>()
 		{
@@ -155,7 +155,7 @@ public class SearchDataModel extends AbstractPublisher<SearchDataModel.SearchDat
 	{
 		if (!resultMap.containsKey("Filename"))
 			return null;
-		SearchDataModel.SearchResult result = new SearchResult();
+		SearchResult result = new SearchResult();
 		result.title = resultMap.get("Filename");
 		result.tth = resultMap.get("TTH");
 		//TODO: add possible exception catch
