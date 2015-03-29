@@ -51,7 +51,7 @@ public class ServiceProxy
 				@JsonRpcParam(name="searchtype") int searchType, 
 				@JsonRpcParam(name="sizemode") int sizeMode, 
 				@JsonRpcParam(name="sizetype") int sizeType, 
-				@JsonRpcParam(name="realSize") double size, 
+				@JsonRpcParam(name="size") double size, 
 				@JsonRpcParam(name="huburls") String hubUrls);
 		HashMap<String, String>[] getresults(@JsonRpcParam(name="huburl") String hubUrl);
 		void clear();
@@ -104,14 +104,6 @@ public class ServiceProxy
 			@Override
 			protected Integer execAction()
 			{
-				//EXP:
-				String value = hub.list();
-				if (value.length() == 0)
-				{
-					Log.e("sendSearch", "hub list empty");
-					throw new Error("hub list empty");
-				}
-				//EXP:
 				search.clear();
 				return search.send(searchString, searchType, sizeMode, sizeType, size, hubUrls);
 			}

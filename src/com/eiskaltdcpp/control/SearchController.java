@@ -18,7 +18,11 @@ public class SearchController
 		this.listener = new ViewUserActionsListener();
 	}
 	
-	public void sendSearch(String searchString, Context context)
+	public void sendSearch(String searchString, 
+			int searchType, 
+			int sizeMode, int sizeType, double size, 
+			String hubUrls, 
+			Context context)
 	{
 		searchResultsTask.stop();
 		model.clearResults();
@@ -29,7 +33,7 @@ public class SearchController
 		dlgAlert.setPositiveButton("OK", null);
 		dlgAlert.setCancelable(true);
 		
-		ServiceProxy.getInstance().sendSearch(searchString, 0, 0, 0, 0, "", 
+		ServiceProxy.getInstance().sendSearch(searchString, searchType, sizeMode, sizeType, size, "", 
 				new AsyncTaskResultListener<Integer>()
 				{
 					

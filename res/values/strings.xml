@@ -5,5 +5,10 @@
     <string name="button_send">SEND</string>
     <string name="title_activity_display_message">MyMessage</string>
     <string name="title_activity_search">Search</string>
+    
+    <string name ="search_mode_dont_care">do not care</string>
+    <string name ="search_mode_at_least">at least</string>
+    <string name ="search_mode_at_most">at most</string>
+    
 
 </resources>

@@ -4,22 +4,85 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/editTextSearchString"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+	    
+    <TextView
+            android:id="@+id/text_view_search_string_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search:"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+        
+    <EditText
+        android:id="@+id/edit_text_search_string"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/text_view_search_string_label"
         android:ems="10" >
 
-        <requestFocus />
     </EditText>
+    
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+
+	    <TextView
+	        android:id="@+id/text_view_search_size_label"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_centerVertical="true"
+	        android:text="Size:"
+	        android:textAppearance="?android:attr/textAppearanceLarge" />
+	    
+	    <Spinner
+	        android:id="@+id/spinner_search_size_mode"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@id/text_view_search_size_label" />
+
+    </RelativeLayout>
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/edit_text_search_size_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/text_view_search_size_units_label"
+            android:ems="10"
+            android:inputType="numberDecimal" >
+
+        </EditText>
+
+        <TextView
+            android:id="@+id/text_view_search_size_units_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="MiB"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </RelativeLayout>
 
     <Button
-        android:id="@+id/buttonStartSearch"
-        android:layout_width="wrap_content"
+        android:id="@+id/button_search_start"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Search" 
-      	
-      	android:onClick="onSearchButtonClick"  
-      />
+        android:onClick="onSearchButtonClick"
+        android:text="Search" />
 
 </LinearLayout>

@@ -115,7 +115,9 @@ public class SearchResultsView extends AbstractView<SearchDataModel, SearchDataM
 		@Override
 		protected String getItemDetails(SearchResult item)
 		{
-			return "Count: " + Long.toString(item.getCount());
+			String count = "Count: " + Long.toString(item.getCount());
+			String size = "Size: " + Long.toString(item.realSize / (1024 * 1024)) + " MiB";
+			return count + "; " + size;
 		}
 
 		@Override
