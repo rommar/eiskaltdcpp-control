@@ -15,15 +15,18 @@
         android:src="@drawable/ic_launcher"
         
          />
+
      <ImageView
-        android:id="@+id/result_item_popup_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:adjustViewBounds="true"
-        android:maxHeight="15dp"
-        android:src="@drawable/ic_action_popup_menu" />
+         android:id="@+id/result_item_popup_icon"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentRight="true"
+         android:layout_centerVertical="true"
+         android:adjustViewBounds="true"
+         android:maxHeight="15dp"
+         android:paddingLeft="10dp"
+         android:paddingRight="10dp"
+         android:src="@drawable/ic_action_popup_menu" />
      
     <TextView
         android:id="@+id/resource_details"
