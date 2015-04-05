@@ -18,11 +18,17 @@ public class SearchController
 		this.listener = new ViewUserActionsListener();
 	}
 	
+	public interface SendSearchListener
+	{
+		void onSuccess();
+	}
+	
 	public void sendSearch(String searchString, 
 			int searchType, 
 			int sizeMode, int sizeType, double size, 
 			String hubUrls, 
-			Context context)
+			Context context,
+			final SendSearchListener sendSearchListener)
 	{
 		searchResultsTask.stop();
 		model.clearResults();
@@ -46,6 +52,8 @@ public class SearchController
 					public void onCompleted(Integer result)
 					{
 						searchResultsTask.start(2000);
+						if (sendSearchListener != null)
+							sendSearchListener.onSuccess();
 						
 					}
 				});

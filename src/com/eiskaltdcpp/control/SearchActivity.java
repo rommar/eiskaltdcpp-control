@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 
 import com.eiskaltdcpp.control.R;
+import com.eiskaltdcpp.control.SearchController.SendSearchListener;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -135,6 +136,15 @@ public class SearchActivity extends ActionBarActivity
     	
     	Core.getInstance().getSearchController().sendSearch(searchString, SearchConstants.Type.ANY.ordinal(), 
     			sizeMode.ordinal(), SearchConstants.SizeUnits.MBYTES.ordinal(), sizeValue, 
-    			"", this);
+    			"", 
+    			this, 
+    			new SendSearchListener()
+				{
+					@Override
+					public void onSuccess()
+					{
+						finish();
+					}
+				});
     }
 }
