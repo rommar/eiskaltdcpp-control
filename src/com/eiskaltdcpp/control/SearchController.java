@@ -45,9 +45,6 @@ public class SearchController
 					
 					public void onCompleted(Integer result)
 					{
-						dlgAlert.setMessage("OK");
-						dlgAlert.create().show();
-						
 						searchResultsTask.start(2000);
 						
 					}

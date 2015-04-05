@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+
 import com.eiskaltdcpp.control.DownloadQueueDataModel.DownloadQueueModelListener;
+import com.eiskaltdcpp.control.SearchDataModel.SearchResult;
 import com.eiskaltdcpp.control.ServiceProxy.QueueRecords;
 
 public class DownloadQueueView extends AbstractView<DownloadQueueDataModel, DownloadQueueModelListener>
@@ -103,13 +107,31 @@ public class DownloadQueueView extends AbstractView<DownloadQueueDataModel, Down
 			switch (resource)
 			{
 			case R.id.download_queue_action_remove:
-				if (actionsListener != null)
-					actionsListener.removeQueueItem(item);
+				removeItemActivated(item);
 			}
 			return false;
 		}
 
+		@Override
+		protected void configureDefaultAction(ImageView imageView)
+		{
+			String uri = "@drawable/ic_action_remove";
+			int imageResource = getContext().getResources().getIdentifier(uri, null, getContext().getPackageName());
+			Drawable res = getContext().getResources().getDrawable(imageResource);
+			imageView.setImageDrawable(res);
+		};
 		
+		@Override
+		protected void onDefaultActionClicked(QueueItem item)
+		{
+			removeItemActivated(item);
+		}; 
+		
+		private void removeItemActivated(QueueItem item)
+		{
+			if (actionsListener != null)
+				actionsListener.removeQueueItem(item);
+		}
 		
 	}
 	

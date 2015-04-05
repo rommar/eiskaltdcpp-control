@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.eiskaltdcpp.control.AbstractPublisher.Notificator;
 import com.eiskaltdcpp.control.SearchDataModel.SearchDataModelListener;
@@ -131,6 +133,22 @@ public class SearchResultsView extends AbstractView<SearchDataModel, SearchDataM
 			}
 			return false;
 		}
+		
+		@Override
+		protected void configureDefaultAction(ImageView imageView)
+		{
+			String uri = "@drawable/ic_download";
+			int imageResource = getContext().getResources().getIdentifier(uri, null, getContext().getPackageName());
+			Drawable res = getContext().getResources().getDrawable(imageResource);
+			imageView.setImageDrawable(res);
+		};
+		
+		@Override
+		protected void onDefaultActionClicked(SearchResult resultsGroup)
+		{
+			downloadItemClicked(resultsGroup);
+		}; 
+		
 		
 	}
 	

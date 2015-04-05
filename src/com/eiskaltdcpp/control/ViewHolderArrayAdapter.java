@@ -12,8 +12,8 @@ import android.widget.ArrayAdapter;
 public abstract class ViewHolderArrayAdapter<ItemType, HolderType> extends ArrayAdapter<ItemType> 
 {
 	private Context context = null;
-	int resource;
-	ArrayList<ItemType> array;
+	private int resource;
+	private ArrayList<ItemType> array;
 	
 	public ViewHolderArrayAdapter(Context context, int resource, ArrayList<ItemType> resultList)
 	{
